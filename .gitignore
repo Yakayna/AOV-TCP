@@ -1,0 +1,22 @@
+# Inputs/secret của bạn — KHÔNG commit
+captures/
+*.pcap
+*.log
+.garena_creds
+.garena_device_id
+garena_browser_state.json
+garena_token.json
+msdk_token*.json
+token_tails.json
+registered_tokens.json
+tail_found.json
+oauth_flow_final.json
+f0_payload.bin
+realm_templates.json
+connect_6670_frameset.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
