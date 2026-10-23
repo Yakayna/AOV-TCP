@@ -50,7 +50,7 @@ def run_hidden(script, extra=None, timeout=600):
 
 
 def read_password(prompt):
-    """Masked password input that supports paste."""
+    """Masked password input that supports paste; fallback to visible if empty."""
     print(prompt, end="", flush=True)
     chars = []
     try:
@@ -59,6 +59,9 @@ def read_password(prompt):
             ch = msvcrt.getwch()
             if ch in ("\r", "\n"):
                 print()
+                if not chars:
+                    print("  (Khong nhan duoc ky tu - nhap lai, mat khau se hien)")
+                    return input("  Mat khau Garena  : ")
                 return "".join(chars)
             if ch == "\x03":
                 raise KeyboardInterrupt

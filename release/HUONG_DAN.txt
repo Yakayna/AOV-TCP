@@ -22,6 +22,25 @@ Neu ban muon acc o trong lobby lien tuc (khong tat cmd):
 LUU Y: che do nay KHONG can LDPlayer/game client, chi can internet
 va cua so CMD con mo.
 
+
+------------------------------------------------------------
+QUAY VIDEO / RECORD MAN HINH
+------------------------------------------------------------
+- Cong cu chinh de quay: chay file  Start.cmd
+  (cua so chi hien thi tien trinh than thien, KHONG hien token/
+   tail/frame/ky thuat ben trong).
+- Cac buoc quay goi y:
+   1. Mo thu muc Final, nhay dup Start.cmd
+   2. Nhap tai khoan + mat khau (mat khau hien dau *)
+   3. Neu Chrome captcha hien -> quay luon canh giai captcha
+   4. Cho cac dong tien trinh va dong:
+         DA VAO SANH. Dang duy tri ket noi 24/7.
+         ONLINE  |  dang duy tri ket noi  (0 phut)
+   5. Co the de cua so chay tiep de quay canh online 24/7
+- TRANH mo cac thu muc sau khi dang quay (de lo method):
+     app\logs\ , tools\ , captures\
+- Khong can mo LDPlayer/game.
+
 ============================================================
  LIEN QUAN MOBILE - CLIENTLESS LOBBY  (thu muc Final)
 ============================================================
