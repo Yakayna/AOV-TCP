@@ -96,7 +96,24 @@ def save_creds(acc, pw):
         f.write(acc + "\n" + pw + "\n")
 
 
+def cached_garena(acc):
+    try:
+        g = json.load(open(os.path.join(CAP, "garena_token.json"), encoding="utf-8"))
+        if str(g.get("account", "")).lower() != acc.lower():
+            return None
+        exp = float((g.get("response") or {}).get("expiry_time") or 0)
+        if exp - time.time() > 300:
+            return g
+    except Exception:
+        pass
+    return None
+
+
 def do_login(acc, pw):
+    cached = cached_garena(acc)
+    if cached:
+        step("[1/4] Dang khoi phuc phien Garena...")
+        return cached
     step("[1/4] Dang ket noi Garena...")
     rc = run_hidden("garena_clientless_login.py", timeout=150)
     if rc != 0:

