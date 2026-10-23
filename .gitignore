@@ -20,3 +20,18 @@ __pycache__/
 *.pyc
 *.pyo
 .venv/
+
+# release runtime secrets / logs
+release/app/logs/
+release/captures/*.json.tmp
+release/captures/.garena_creds
+release/captures/garena_token.json
+release/captures/garena_browser_state.json
+release/captures/msdk_token*.json
+release/captures/token_tails.json
+release/captures/tail_found.json
+release/captures/lobby_session_evidence.json
+release/captures/trust/
+__pycache__/
+*.pyc
+*.pcap

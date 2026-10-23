@@ -1,0 +1,123 @@
+{
+ "purpose": "Ready frameset to replay the app's realm/login-server (TCP 148.222.93.33:6670) flow from any origin (esp. from the device via frida socket). If this realm login is accepted, its S>C 0x4013 reply carries the assigned gateway IP; then the gateway 0x1001/0x2001 flow can be replayed there and should be accepted.",
+ "captured_from": "captures/gw2.pcap (live app session 2026-10-22 13:29 ICT, successful gateway auth)",
+ "realm_servers": [
+  "148.222.93.33:6670",
+  "148.222.93.38:6670"
+ ],
+ "steps": [
+  "1) TCP connect realm server, send raw1001 (below).",
+  "2) read S>C 0x1002; session key = header-extension bytes [2:18] (16 ASCII chars).",
+  "3) for each send item: body = 16 random IV + AES-128-CBC(key, IV, plaintext); header = captured header with body_len patched at offset 19..20 big-endian to len(body); send header+body.",
+  "4) read S>C: 0x2002 + 0x6002 = realm auth OK; decrypt S>C 0x4013 bodies with same key; the reply whose plaintext contains an ASCII dotted IP is the ASSIGNED GATEWAY.",
+  "5) connect assigned gateway IP:6630, send raw1001 then 0x2001 with token_38 -> expect 0x2002 AUTH OK."
+ ],
+ "raw1001": "33 66 00 08 00 08 10 01 00 00 00 00 01 00 00 00 46 00 00 00 00 02 03 00 00 27 10 00 00 00 65 80 31 03 00 00 00 11 35 35 30 37 35 34 36 31 35 32 37 36 34 35 32 39 00 00 00 00 00 00 00 00 00 00 00 03 00 00 00 00",
+ "raw2001_header": "33 66 00 08 00 08 20 01 00 00 00 00 02 00 00 00 15 00 00 00 50",
+ "token_38": "bbf3617899ba9996b6d17bdc1b054177f75e2f",
+ "token_full_40_itop_decode": "82bbf3617899ba9996b6d17bdc1b054177f75e2f",
+ "send_plaintexts": [
+  {
+   "cmd": "0x2001",
+   "header_len": 21,
+   "header_hex": "336600080008200100000000020000001500000050",
+   "plaintext_len": 64,
+   "plaintext_hex": "626266333631373839396261393939366236643137626463316230353431373766373565326600000000000000000000000000000000000000b9747366346707",
+   "encrypted": true
+  },
+  {
+   "cmd": "0x4013",
+   "header_len": 22,
+   "header_hex": "33660008000840130000000003000000160000003000",
+   "plaintext_len": 32,
+   "plaintext_hex": "00000001000027840000011000000000000000000000000100bd747366346707",
+   "encrypted": true
+  },
+  {
+   "cmd": "0x4013",
+   "header_len": 22,
+   "header_hex": "33660008000840130000000004000000160000025001",
+   "plaintext_len": 576,
+   "plaintext_hex": "dbb100000001030000870300008a0000003c416e64726f6964204f532039202f204150492d32382028505133412e3139303730352e30393231313134302f473937303046585855314150464f29000000000c7669766f2056323231384100000000054e554c4c000000000a57692d46692f4c414e0e00000200e009312e36342e312e370000000bbc2c0040303030301a00a3083137363835373700ff010000a500001900160759008008456e676c697368170014010500f01f0500000002d0000000255175616c636f6d6d20546563686e6f6c6f676965732c20496e63204d534d383939382c33360010032d00f01566356531616566612d613231372d343933642d623038332d6464623866356135356538662d00016800f11222313739323431393930303936342d373533333135353036303535363537383430d000f0023100006816000056030000d7bc0000b9784000e10013911584050471000003f30101d300f0153038422d37422d44442d31422d31332d34452d34302d44422d36452d46462d44302d30330f00f12330342d43302d303500000bf057d40000002138343335386232393861653536343934653131646434313336616564633636397100043901f31121633431663030326261316232386131333637346661316131303163326562312e00600100001afc81370001eb000105007007676f6f676c651500f006152d3734353533393838393632313230333134303119001401da001001330090084475634d696e6800c31f0d444b73545c5d17a8d26ceb747366346714",
+   "encrypted": true
+  },
+  {
+   "cmd": "0x4013",
+   "header_len": 22,
+   "header_hex": "33660008000840130000000005000000160000003000",
+   "plaintext_len": 32,
+   "plaintext_hex": "00000002000000000000000075aeb9972019826054cb704be281747366346714",
+   "encrypted": true
+  },
+  {
+   "cmd": "0x5001",
+   "header_len": 21,
+   "header_hex": "336600080008500100000000060000001500000010",
+   "plaintext_len": 16,
+   "plaintext_hex": "f2dab758a9b217b9978e07b6e85cf364",
+   "encrypted": false,
+   "note": "16-byte ack body sent as captured (not AES-encrypted)"
+  }
+ ],
+ "expected_server": [
+  {
+   "cmd": "0x1002",
+   "header_hex": "02 10 58 6e 39 79 47 6a 38 52 66 53 47 34 39 6a 67 51 01 00 00 00 64 00 00 00 00",
+   "body_hex": "ac 79 e1 a0 b2 0b d0 f3 b1 76 04 d1 75 52 40 10",
+   "plaintext_hex": null,
+   "plaintext_ascii": null
+  },
+  {
+   "cmd": "0x2002",
+   "header_hex": "",
+   "body_hex": "3e a2 5f bd 63 95 e8 de e0 63 65 7a 6d c5 af 47 eb 2c 7f de b9 17 ff 21 ce e8 e2 66 66 59 08 36 9c 4c 84 5a 46 bc 0b 13 ee d9 91 8f af f2 5a 1a 86 f8 af c8 23 d3 ac 96 b0 49 58 9c 8d b9 52 81",
+   "plaintext_hex": "32 37 36 34 35 32 39 00 00 00 00 00 00 00 00 00 ff ff 00 00 ff ff ff ff 00 00 ff ff ff ff 00 00 00 00 dc 3a 88 4f 44 72 8e b0 74 73 66 34 67 0e",
+   "plaintext_ascii": "2764529............................:.ODr..tsf4g."
+  },
+  {
+   "cmd": "0x6002",
+   "header_hex": "",
+   "body_hex": "69 ab d4 c5 97 7d f1 70 0c 4e e1 cf d5 0b d3 ff d1 c7 bb 96 5c 46 e7 2f 1f 12 88 79 63 90 6b 07",
+   "plaintext_hex": "64 76 36 52 01 00 00 00 64 e5 74 73 66 34 67 07",
+   "plaintext_ascii": "dv6R....d.tsf4g."
+  },
+  {
+   "cmd": "0x4013",
+   "header_hex": "00",
+   "body_hex": "b9 5a c8 03 da af 5d 54 e6 a3 92 60 ea 7a 46 d6 ae 47 f0 5a ca a7 d1 4e e2 8d 65 c9 9c 06 1f ce aa c3 24 d7 9d 81 9d 1c 14 d6 98 0b 6b 27 3d 78",
+   "plaintext_hex": "00 00 00 62 70 00 00 00 01 00 13 91 15 84 05 04 71 21 2d af 88 c6 f6 2a 50 be 74 73 66 34 67 0f",
+   "plaintext_ascii": "...bp...........q!-....*P.tsf4g."
+  },
+  {
+   "cmd": "0x4013",
+   "header_hex": "00",
+   "body_hex": "32 10 c8 c6 77 4a f8 99 b6 56 cc 93 81 d7 2f ca 6b 53 93 44 1d cc b6 34 15 0c 06 8c 5f d8 01 d6 95 46 59 f0 d6 e1 57 2d 92 32 82 f3 ab e8 a3 1b",
+   "plaintext_hex": "00 00 00 0f 31 34 38 2e 32 32 32 2e 39 30 2e 31 36 35 00 19 e6 8b f6 cd 10 1a 74 73 66 34 67 0b",
+   "plaintext_ascii": "....148.222.90.165........tsf4g."
+  },
+  {
+   "cmd": "0x5002",
+   "header_hex": "",
+   "body_hex": "00 00 00 07 00 00 00 00",
+   "plaintext_hex": null,
+   "plaintext_ascii": null
+  }
+ ],
+ "notes": [
+  "sent order: 0x2001 then the three 0x4013 frames then 0x5001 (matches capture: 0x2001 at +31ms, 0x4013 at +252/470/470ms, 0x5001 after S-Stop).",
+  "0x1001 header extension must be byte-identical to raw1001 (malformed ext => server silently drops).",
+  "0x2001 plaintext layout: token38 + 19 x 00 + marker + 'tsf4g' + 0x07 (64 B); marker was 0xE5 in this capture (observed markers vary per session: 0x9b/0x4f/0xb9/0xeb/0xe5/0xc1 - use any).",
+  "if realm rejects with 0x5002 body 00 00 00 11 10 00 00 01 from PC origin, retry the SAME frameset FROM THE DEVICE (frida socket) to test environment/device binding.",
+  "gateway step: 148.222.90.165:6630 in this capture - but always use the IP returned by the fresh realm reply."
+ ],
+ "assignment_parsed": {
+  "source": "S>C 0x4013 seq=5 in gw2.pcap realm flow (148.222.93.33:6670)",
+  "plaintext_hex": "00 00 00 0f 31 34 38 2e 32 32 32 2e 39 30 2e 31 36 35 00 19 e6 8b f6 cd 10 1a 74 73 66 34 67 0b",
+  "layout": "[u32 BE len=15][IP cstring incl NUL '148.222.90.165'][u16 BE port 0x19e6=6630][5 opaque bytes 8b f6 cd 10 1a][tsf4g][cutver 0x0b]",
+  "ip": "148.222.90.165",
+  "port": 6630,
+  "cutver": 11,
+  "opaque_hex": "8b f6 cd 10 1a",
+  "total_len": 32
+ }
+}

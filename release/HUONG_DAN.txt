@@ -1,0 +1,100 @@
+
+------------------------------------------------------------
+CHE DO ONLINE 24/7 (GIU LOBBY) - QUAN TRONG
+------------------------------------------------------------
+Neu ban muon acc o trong lobby lien tuc (khong tat cmd):
+
+1. Mo thu muc Final, nhay dup: LUQ_Online.cmd
+2. Nhap tai khoan/mat khau nhu binh thuong.
+3. Giai captcha neu Chrome hien ra.
+4. Sau khi thay "SESSION CREATED + LOBBY DATA", tool tu chuyen sang
+   che do giu lobby:
+      [hold] ONLINE | 148.222.90.36:6629 frames=... big=...
+   Cu ~90 giay no ping lai 1 lan de session khong bi server huy.
+5. GIU CUA SO CMD MO 24/7 (may tinh phai bat). Dong cua so = dung.
+   Muon dung chu dong: bam Ctrl+C trong cua so CMD.
+6. Neu session bi rot (vd. mat mang), tool tu tao lai session.
+   Neu token het han (sau nhieu ngay), tool se bao:
+      "GOI Y: ... chay lai LUQ_Login.cmd"
+   -> chi can chay lai LUQ_Online.cmd la xong.
+7. Log giu lobby: Final\captures\hold_log.txt
+
+LUU Y: che do nay KHONG can LDPlayer/game client, chi can internet
+va cua so CMD con mo.
+
+============================================================
+ LIEN QUAN MOBILE - CLIENTLESS LOBBY  (thu muc Final)
+============================================================
+
+MUC TIEU: dang nhap bang tai khoan/mat khau Garena va vao lobby
+          KHONG can mo game client. Ban tu giai captcha 1 lan.
+
+------------------------------------------------------------
+CACH CHAY (lam dung thu tu)
+------------------------------------------------------------
+1. TAT game Lien Quan tren LDPlayer (va tat cac app khac neu co).
+   Khong can mo game.
+
+2. Nhay dup file:
+      LUQ_Login.cmd
+
+3. Nhap:
+      Tai khoan Garena: (vi du archirisus)
+      Mat khau Garena:  (mac dinh se HIEN tren man hinh de tranh
+                         loi dan Ctrl+V bi mat ky tu)
+
+4. NEU mot cua so CHROME hien ra voi captcha DataDome
+   ("Verify you are human" dang checkbox/slider):
+      -> HAY GIAI CAPTCHA do (click/kéo theo huong dan)
+      -> KHONG dong cua so Chrome
+      -> Cho toi da ~200 giay, tool se tu tiep tuc
+   (Lan dau co the can giai captcha; cac lan sau cookie con han
+    thi tool tu login clientless, khong hien Chrome.)
+
+5. Cho them 1-2 phut (tool tu do "tail" cua token).
+   Khi thanh cong ban se thay:
+      [+] SESSION CREATED + LOBBY DATA on 148.222.90.36:6629
+      RESULT: {... "success": true, "big": 44 ...}
+   Bang chung: captures\lobby_session_evidence.json
+
+------------------------------------------------------------
+NEU KHONG THAY CUA SO CHROME
+------------------------------------------------------------
+- Chay rieng: Refresh_Captcha.cmd
+  -> nhap tai khoan/mat khau -> Chrome mo ra -> giai captcha
+  -> dong xong quay lai chay LUQ_Login.cmd.
+- Do lai: Chrome co the bi an phia sau LDPlayer; xem thanh taskbar.
+
+------------------------------------------------------------
+LUU Y QUAN TRONG
+------------------------------------------------------------
+- KHONG chay bang lenh "python tools\..." trong thu muc tools:
+  python he thong (3.13) thieu thu vien playwright. Hay dung file .cmd
+  (file .cmd da tu tro dung Python kem san).
+- Acc phai la acc Garena co nhan vat trong game (da tung choi).
+  Acc 0379786489az la acc cu da bi ban gia lap -> co the khong vao duoc.
+- Tool khong hien thi game, khong can LDPlayer bat.
+- Neu tool bao loi "DataDome" ma Chrome khong mo: xem lai Chrome da
+  cai chua (C:\Program Files\Google\Chrome\Application\chrome.exe).
+- Mat khau duoc ghi tam vao captures\.garena_creds (co the xoa sau).
+- Template "firstlogin_frames_template.json" da co san trong captures.
+
+------------------------------------------------------------
+THU MUC CO GI
+------------------------------------------------------------
+LUQ_Login.cmd            <- chay cai nay de login vao lobby
+Refresh_Captcha.cmd      <- chay khi can giai captcha truoc
+HUONG_DAN.txt            <- file nay
+tools\garena_clientless_lobby.py   <- pipeline chinh
+tools\refresh_captcha.py           <- ho tro giai captcha
+tools\garena_clientless_login.py   <- Garena login clientless
+tools\garena_oauth_final.py        <- mo Chrome lay cookie DataDome
+tools\itop_codec.py                <- mint MSDK game token
+tools\brute_tail.py                <- do 16-bit auth tail
+tools\clientless_lobby_replay.py   <- replay tao session + nhan lobby
+captures\firstlogin_frames_template.json <- template frame first-login
+captures\connect_6670_frameset.json      <- template 0x1001/0x2001
+captures\token_tails.json                <- cache tail (tang toc)
+captures\garena_browser_state.json       <- cookie DataDome (neu con han)
+
+============================================================

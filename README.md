@@ -101,3 +101,14 @@ captures/         # INPUT cua ban (gitignored): token, cookie, pcap, templates
    cho mỗi acc mới.
 
 Chi tiết giao thức: [docs/PROTOCOL.md](docs/PROTOCOL.md).
+
+## Release: clientless lobby runner (khong can game client)
+
+Thu muc `release/` chua ban chay san:
+
+- `setup.cmd` - cai dependencies (playwright, cryptography)
+- `Start.cmd` - nhap tai khoan/mat khau Garena, giai captcha neu co, vao sanh va giu online 24/7
+- `HUONG_DAN.txt` - huong dan chi tiet
+- `app/`, `tools/`, `captures/` - ma nguon va du lieu can thiet
+
+Yeu cau: Windows + Python 3.10+ + Google Chrome + Internet.
