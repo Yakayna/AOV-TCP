@@ -92,7 +92,7 @@ def auth(s, raw1001, core, tail):
         if f["cmd"] == 0x1002 and len(f["raw"]) >= 39: key = f["raw"][23:39]
     if not key: return None, parse(d)
     iv = ecb(key, HEAD + struct.pack(">H", tail))
-    pt = core.encode() + b"\x00"*(64-len(core)-7) + bytes([random.randrange(256)]) + b"tsf4g" + b"\x07"
+    pt = core.encode() + b"\x00"*(64-len(core)-7) + b"\x17" + b"tsf4g" + b"\x07"
     body = iv + enc(key, iv, pt)
     h = bytearray(bytes.fromhex(FS_FILE and json.load(open(FS_FILE, encoding="utf-8"))["raw2001_header"].replace(" ", "")))
     struct.pack_into(">H", h, 19, len(body))
@@ -143,7 +143,7 @@ def ensure_tail_for_token(token):
 
 def run_hold(seconds=None):
     fs, tokj, tpl, token, tail = load_all()
-    core = token[2:]
+    core = token[2:40]
     openid = str(tokj.get("openid"))
     raw1001 = bytearray(bytes.fromhex(fs["raw1001"].replace(" ", "")))
     i = bytes(raw1001).find(b"OPENID_PLACEHOLD")

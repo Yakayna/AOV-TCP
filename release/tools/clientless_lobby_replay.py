@@ -130,9 +130,9 @@ def run_gateway(ip, port, token, tail, frames, auth_header, raw1001, timeout=8.0
                 key = f["raw"][23:39]
         if not key:
             return {"ip": ip, "port": port, "error": "no 0x1002"}
-        core = token[2:]
+        core = token[2:40]
         iv = ecb(key, HEAD + struct.pack(">H", tail))
-        pt = core.encode() + b"\x00" * (64 - len(core) - 7) + bytes([0x5a]) + b"tsf4g" + b"\x07"
+        pt = core.encode() + b"\x00" * (64 - len(core) - 7) + b"\x17" + b"tsf4g" + b"\x07"
         body = iv + enc(key, iv, pt)
         h = bytearray(bytes.fromhex(auth_header))
         struct.pack_into(">H", h, 19, len(body))

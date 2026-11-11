@@ -20,8 +20,11 @@ qua các giao thức TCP/HTTP mà mình đã reverse được.
 | Dò **tail IV-struct 16-bit** cho token mới (protocol TSF4G yêu cầu) | ✅ ~1–3 phút/token, có cache |
 | Realm 6670: auth token → gửi device reports → nhận **assignment IP:port** | ✅ |
 | Gateway 6629/6630: `0x1001` → key; `0x2001` → `0x2002` + `0x6002` + `0x4013` hello | ✅ |
+| `0x2001` **byte-identical với app** (plaintext 64B: 38 ký tự token + đệm + `0x17` + `tsf4g` + `0x07`) | ✅ mới xác minh 04/11 — dùng `release/src/aov/` |
 | Gửi `f0` device report → nhận dữ liệu lobby `0x4013` | ⚠️ chỉ với token **đã từng được game client đăng nhập** (server-side trust) |
 | World-login/lobby với token mint hoàn toàn clientless | ❌ server trả `S-Stop 0x11` (chưa trust) |
+
+> 📌 **Xác minh mới 04/11/2026:** layout `0x2001` đã khớp app từng byte (64B: `token[2:40]` + đệm + `0x17` + `tsf4g` + `0x07`), HEAD/tail khớp IV của app, không có MAC trong frame, và gate lobby không nằm trong `libgcloud.so`. Chi tiết: [`release/docs/VERIFIED_2026-11-04.md`](release/docs/VERIFIED_2026-11-04.md). Package mới `release/src/aov/` (crypto + frame + login + brute_tail) có self-test: `python release/tests/test_crypto.py`.
 
 **Blocker hiện tại:** game server quyết định “trust” token ở phía server, không có bước
 nào trong code client để copy thêm (đã đào IL2CPP + libgcloud). Hướng giải quyết:
